@@ -1,0 +1,50 @@
+{# header }
+<head>
+	<style>
+	   textarea {width:500px; height: 500px; resize : none;}
+	   .none{display : none;}
+	</style>
+</head>
+	
+
+<body>
+	<!--{ ? data.mode == 'write' }-->
+		<!--{ ? data.sno }-->
+			<form method = "GET" action = "board_ps.php">
+				<p>{=data.sno}번글 수정</p>
+				<input type = "text" class = "none" name = "mode" value ="update"></input>
+				<input type = "text" class = "none" name = "sno" value = {=data.sno}></input>
+				제목 : <input type = "text" name = "title"> </input><br>
+				내용 : <br>
+				<textarea name = "content" col = "30" rows= "30"> </textarea><br>
+				글쓴이 : <input type = "text" name = "writer"> </input><br>
+				파일 업로드 : <input type = "file" name = "uploadFile"></input>
+				<button type = "submit">데이터 입력 완료</button>
+			</form>
+			<form method = "GET" action = "board_ps.php">
+				<input type = "text" name = "mode" class = "none" value ="delete"></input>
+				<input type = "text" name = "sno"  class = "none" value = {==data.sno}></input>
+				<button type = "submit">삭제하기</button>
+			</form>
+			<!-- {:} 
+				<form method = "GET" action = "board_ps.php">
+					<p>글쓰기</p>
+					<input type = "text" class = "none" name = "mode" value = "write"></input>
+					제목 : <input type = "text" name = "title"> </input><br>
+					내용 : <br>
+					<textarea name = "content" col = "30" rows= "30"> </textarea><br>
+					글쓴이 : <input type = "text" name = "writer"> </input><br>
+					파일 업로드 : <input type = "file" name = "uploadFile"></input>
+				<button type = "submit">데이터 입력 완료</button>
+				</form>
+			<!--{ / }-->
+		<!-- {: data.mode == 'read'}
+			제목 : <span>{=data.title}</span>
+			작성자 : <span>{=data.writer}</span><br>
+			내용 : <br>
+			<textarea readonly>{=data.content}</textarea><br>
+			<button><a href = "board_list.php">뒤로가기</a></button> 
+	<!--{ / }-->
+</body>
+
+{# footer }

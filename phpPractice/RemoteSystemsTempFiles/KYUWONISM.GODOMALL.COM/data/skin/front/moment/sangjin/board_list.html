@@ -1,0 +1,106 @@
+{# header }
+<head>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script>
+    var $click = 0;
+    
+    
+    
+    
+  	  $(function(){
+     	   $('#allCheck').click(function(){
+     		   if($click ==1){   
+         		   for($i = 0; $i < $('.check').length; $i++){
+         			   $('.check')[$i].click(2);	   
+         		   }
+         		   $click = 0;
+     		   }
+     		   else{
+     			   $click = 1;
+         		   for($i = 0; $i < $('.check').length; $i++){
+         			   $('.check')[$i].click(1);
+         			   
+         		   }
+     		   }
+     	   });
+       	  
+       	  $('.check').click(function($allCheck){
+       		if($allCheck == 1){
+       			$(this).prop("checked", true);
+   		  	}else if($allCheck == 2){
+   			  
+   		  		$(this).prop("checked",false);
+   		    }else{
+   			if($(this).prop("checked"))
+   				{
+  				$(this).prop("checked", true);
+   				}
+   			else{
+   				$(this).prop("checked",false);
+   				}  
+   		 	 }
+   		 
+   			var $state = $(this).prop("checked");
+   			  if($state){
+           		  var $id = $(this).attr('id');
+           		  $('input[name='+ $id +']').attr('value', $id);
+   			  }
+   			  else{
+           		  var $id = $(this).attr('id');     				  
+   				  $('input[name='+ $id +']').attr('value', '');
+   			  }
+       	  });
+  	  });
+
+	
+	</script>
+	<style>
+	.none{display : none;}
+	td{max-width : 500px; max-height : 10px;}
+	</style>
+</head>
+<body>
+	<table border = "1">
+		<caption>
+		게시글
+		</caption>
+		<tr><td><span id = "allCheck">□</span></input><td>번호</td></td><td>제목</td><td>내용</td><td>글쓴이</td><td>수정</td></tr>
+		<!--{ @ boardList }--><tr>
+			<td><label><input type = "checkbox" name = {=.sno}  id = {=.sno} class = "check"></input></label></td>
+			<td>{=.sno}</td>
+			<form method = "GET" action = "board_reg.php">
+				<input type = "text" class = "none" value = {=.sno} name = "sno"></input>
+				<input type = "text" class="none" value = {=.title} name= "title"></input>
+				<input type = "text" class="none" value = {=.content} name= "content"></input>
+				<input type = "text" class="none" value = {=.writer} name= "writer"></input>
+				<input type = "text" class = "none" value = "read" name = "mode"></input>
+				<td>
+					<button type = "submit">{=.title}</button>
+				</td>
+				<td>
+					<button type = "submit">{=.content}</button>
+				</td>
+			</form>	
+			<td>{=.writer}</td>
+			<td><form  method = "GET" action = "board_reg.php"><input class="none" type= "text" name = "sno" value ={=.sno}>
+			<input type = "text" name = "mode" value = "write" class="none"></input>
+			<button type = "submit">수정</button></form></td></tr>
+		<!--{ / }-->
+	</table>
+	<form  method = "GET" action = "board_reg.php">
+	<input type = "text" name = "mode" value = "write" class="none"></input>
+	<button>
+		글쓰기
+	</button>
+	</form>
+	<form method = "GET" action = "board_ps.php">
+		<input class = "none" type = "text" name = "mode" value = "delete"></input>
+		<!--{ @ boardList }-->
+			<input type = "text" class = "none" name = {=.sno}></input>
+		<!--{ / }-->
+		<button>
+		선택 삭제
+		</button>
+	</form>
+</body>
+{# footer }
