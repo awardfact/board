@@ -3,47 +3,123 @@
 	<style>
 	   textarea {width:500px; height: 500px; resize : none;}
 	   .none{display : none;}
+	   #readDiv{width : 500px; height : 500px; background : lightgray; display : inline-block;}
+	   button{background : black; border : 1px; color : white;}
+	   #comment{width : 400px;}
+	   #existId{color : blue; background : lightgray; font-size : 13px; display : inline-block;}
+	   #existComment{font-size : 10px;}
 	</style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script>
+    
+    $(function(){
+    	$('#inputComment').click(function(){
+    		var $comment = $('#comment').val();
+    		var $writer =  $('#writer').val();
+    		var $sno =  $('#sno').val();
+    		
+        		$.ajax({
+        			url:'board_ps.php',
+        			type:'POST' ,
+        			data:{
+        				'mode' : 'comment',
+        				'comment' : $comment,
+        				'writer' : $writer,
+        				'sno' : $sno
+        			},
+        			success:function(){
+        				 $('#comment').val('');
+        				 $('#writer').val('');
+        				 location.reload();
+        			},
+        			error:function(){
+        				alert("댓글입력 실패");	
+        			},
+        		});
+    	});
+    	$('#commentUpdate').click(function(){
+    		$(this).css('display','none');
+    		$('commnetDelete').css('display', 'none'');
+    	});
+    });
+    
+    </script>
+    
+
 </head>
 	
 
 <body>
 	<!--{ ? data.mode == 'write' }-->
 		<!--{ ? data.sno }-->
-			<form method = "GET" action = "board_ps.php">
+			<form method = "POST" action = "board_ps.php" enctype = "multipart/form-data">
 				<p>{=data.sno}번글 수정</p>
 				<input type = "text" class = "none" name = "mode" value ="update"></input>
-				<input type = "text" class = "none" name = "sno" value = {=data.sno}></input>
-				제목 : <input type = "text" name = "title"> </input><br>
+				<input type = "text" class = "none" name = "sno" value = "{=data.sno}" ></input>
+				<!--{? data.image}-->
+				<input type= "text" class= "none" name = "image" value = "{=data.image}" />
+				<!--{ / }-->
+ 				제목 : <input type = "text" name = "title" value = "{=data.title}" /><br>
 				내용 : <br>
-				<textarea name = "content" col = "30" rows= "30"> </textarea><br>
-				글쓴이 : <input type = "text" name = "writer"> </input><br>
-				파일 업로드 : <input type = "file" name = "uploadFile"></input>
-				<button type = "submit">데이터 입력 완료</button>
+				<div id = "readDiv">
+				<!--{? data.image}-->
+					<img src = "\data\sangjin\{=data.image}"/><br>
+				<!--{ / }-->
+				<textarea  name = "content" value = "{=data.content}">{=data.content}</textarea>
+				</div><br>
+				글쓴이 : <input type = "text" name = "writer" value = "{=data.writer}" /><br>
+				<!--{? data.image}-->
+				파일 수정하기 : <input type = "file"  name = "uploadFile" value = "{=data.image}" /><br>
+				<!--{:}-->
+				파일 업로드 : <input type = "file"  name = "uploadFile" value = "{=data.image}" /><br>
+				<!--{ / }-->
+				기존 이미지 삭제 <input type = "checkBox" name = "existingImageDelete" /><br>
+				<button type = "submit">데이터 입력 완료</button><br>
 			</form>
-			<form method = "GET" action = "board_ps.php">
+			<form method = "POST" action = "board_ps.php">
 				<input type = "text" name = "mode" class = "none" value ="delete"></input>
-				<input type = "text" name = "sno"  class = "none" value = {==data.sno}></input>
+				<input type = "text" name = "sno"  class = "none" value = {=data.sno}></input>
 				<button type = "submit">삭제하기</button>
 			</form>
-			<!-- {:} 
-				<form method = "GET" action = "board_ps.php">
+			<!--{:}-->
+				<form method = "POST" action = "board_ps.php" enctype = "multipart/form-data">
 					<p>글쓰기</p>
 					<input type = "text" class = "none" name = "mode" value = "write"></input>
-					제목 : <input type = "text" name = "title"> </input><br>
+					제목 : <input type = "text" name = "title" /> </input><br>
 					내용 : <br>
 					<textarea name = "content" col = "30" rows= "30"> </textarea><br>
 					글쓴이 : <input type = "text" name = "writer"> </input><br>
-					파일 업로드 : <input type = "file" name = "uploadFile"></input>
+					파일 업로드 : <input type = "file" name = "uploadFile" value = "File"></input>
 				<button type = "submit">데이터 입력 완료</button>
 				</form>
 			<!--{ / }-->
-		<!-- {: data.mode == 'read'}
-			제목 : <span>{=data.title}</span>
-			작성자 : <span>{=data.writer}</span><br>
-			내용 : <br>
-			<textarea readonly>{=data.content}</textarea><br>
-			<button><a href = "board_list.php">뒤로가기</a></button> 
+	<!--{: data.mode == 'read'}-->
+		제목 : <span>{=data.title}</span>
+		작성자 : <span>{=data.writer}</span><br>
+		내용 : <br>
+		<div id = "readDiv">
+		<!--{? data.image}-->
+		<img src = "\data\sangjin\{=data.image}" widtth ="150" height = "150"/><br>
+		<!--{ / }-->
+		{=data.content}
+		</div><br> 
+		<!--{ @ comment }-->
+			<p id = "existId">{=.writer}<p>
+			<span id = "existComment">{=.comment}</span>
+			<button id = "commnetUpdate">수정 </button> &nbsp;  
+			<input type = "text" style = "display :none;" /> <button id = "commentUpdateFinishButton">수정완료</button>
+			<button id = "commnetDelete">삭제</button>
+			<br><br>
+		<!--{ / }-->
+		댓글 내용 : <input type = "text" id = "comment" name = "comment" /> 
+		이름 : <input type = "text " id = "writer" name = "writer">
+		<button type = "submit" id = "inputComment" >댓글입력</button><br>
+		<button><a href = "board_list.php" style = "color : white";>뒤로가기</a></button> 
+		<form method = "POST" action = "board_ps.php">
+			<input type = "text" name = "mode" class = "none" value = "delete" />
+			<input type = "text" name = "sno" id = "sno" class = "none" value = "{=data.sno}" />
+			<button type = "submit">삭제하기</button>
+		</form>
 	<!--{ / }-->
 </body>
 

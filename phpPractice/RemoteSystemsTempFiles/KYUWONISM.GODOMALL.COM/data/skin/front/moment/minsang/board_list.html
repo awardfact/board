@@ -1,0 +1,64 @@
+<p>게시판 리스트</p>
+<table border = 1>
+<tr><td><input type="checkbox" id="checkBox"/></td><td>순서</td><td>작성자</td><td>제목</td></tr>
+<!--{ @ boardList }-->
+<tr><td><input type="checkbox" class="checkBox2" value="{=.sno}"/></td><td>{=.sno}</td><td>{= .writer}</td><td class="title">{= .title}</td></tr>
+<!--{ / }-->
+</table>
+
+<input type="button" id="edit" value="작성"/>
+<input type="button" id="delete" value="삭제"/>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+$(function(){
+	$('#edit').click(function(){
+		
+		location.href='board_reg.php';
+	});
+	
+});
+//게시글의 제목을 클릭한 경우 해당 글 내용 보여줌
+$(function(){
+	$('.title').click(function(){
+		var sno = $(this).parents().children().children().val(); 
+		location.href='board_reg.php?sno='+sno;
+	});
+});
+//전체 체크박스 제어
+$(function(){
+	$('#checkBox').click(function(){
+		if($('#checkBox').is(":checked")){
+			$('.checkBox2').prop("checked",true);
+		}else{
+			$('.checkBox2').prop("checked",false);
+		}
+	});
+});
+$(function(){
+	$('#delete').click(function(){
+		//순회 하여 click값 확인 list배열에 해당하는 리스트 삽입
+		var list=[];
+		$('.checkBox2').each(function(){
+			if($(this).is(":checked"))
+				list.push($(this).val());
+			
+		});
+		//ajax를 사용하여  삭제할 데이터의 정보를 전송함
+		$.ajax({
+			url:'board_ps.php',
+			type:'POST',
+			data:{
+				'sendType' : 'delete',
+				'sendData' : list
+			},
+			success:function(){
+				location.href='board_list.php';
+			},
+			error:function(){
+				alert("Bad");
+			}
+		});
+		
+	});
+});
+</script>

@@ -12,9 +12,14 @@ class BoardListController extends \Controller\Front\Controller
         $board = App::load(Board::class);
         $boardData = $board->getBoardList();
         
+        
+        $comment = $board->getCommentList($boardData);
+        
+        $this->setData('commentNumber',$comment);
         $this->setData('boardList', $boardData);
+        
+        
     }
     
-    
-    
+
 }

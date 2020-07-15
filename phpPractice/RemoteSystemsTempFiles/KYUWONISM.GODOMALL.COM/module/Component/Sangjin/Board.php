@@ -23,18 +23,12 @@ class Board
 
     // db에서 데이터를 받아서 데이터를 리턴해준다
     public function getBoardList() {
-        $sql = "SELECT * FROM wm_test";
+        $sql = "SELECT * FROM wm_test order by sno desc";
         return $this->db->query_fetch($sql);
     }
     
     
-    
-    public function getBoardfieldList(){
-        
-        $sql = "SELECT * FROM wm_test";
-        return $this -> db -> query_fetch($sql);
-        
-    }
+
     
     /*
      * 매개변수를 입력값으로 받아서 db에 입력 데이터를 추가해준다 
@@ -43,12 +37,14 @@ class Board
         $title = $postValue['title'];
         $content = $postValue['content'];
         $writer = $postValue['writer'];
+        $image = $postValue['image'];
         
         //예제코드 2 방법
-        $sql = "INSERT INTO wm_test SET title = '".$title."', content = '".$content."' , writer = '".$writer."'";
+        $sql = "INSERT INTO wm_test SET title = '".$title."', content = '".$content."' , writer = '".$writer."' ,imagePath = '".$image."'";
         $this ->db -> bind_param_push($arrBind, $title, 'title');
         $this ->db -> bind_param_push($arrBind, $content, 'content');
         $this ->db -> bind_param_push($arrBind, $writer, 'writer');
+        $this -> db -> bind_param_push($arrBind, $image, 'imagePath');
         $this->db->bind_query($sql, $arrBind);
         
         /*예제코드 1 방법
@@ -65,7 +61,7 @@ class Board
         
         //예제코드 2 방법
         $strSQL = "UPDATE wm_test SET title = '".$postValue['title']."' , content = '".$postValue['content']."', writer = 
-        '".$postValue['writer']."' WHERE  sno = '".$postValue['sno']."'";
+        '".$postValue['writer']."' , imagePath = '".$postValue['image']."' WHERE  sno = '".$postValue['sno']."'";
         $this ->db->bind_param_push($arrBind,$postValue['sno'], 'sno');
         $this->db->bind_query($strSQL,$arrBind); 
         
@@ -86,9 +82,53 @@ class Board
             $query = "DELETE FROM wm_test WHERE sno = '".$value."'";
             $this ->db->bind_param_push($arrBind,$value, 'sno');
             $this->db->bind_query($query,$arrBind);
+            
+            $query2 = "DELETE FROM wm_sangjin WHERE board_number ='".$value."'";
+            $this -> db -> bind_param_push($arrBind, $value, 'board_number');
+            $this-> db-> bind_query($query2,$arrBind);
+            
         }
 
         
         
     }
+    
+    // 입력한 댓글을 db에 넣는다 
+    public function insertComment($postValue){
+        
+        $sql = "INSERT INTO wm_sangjin SET board_number = '".$postValue['sno']."' , 
+            comment = '".$postValue['comment']."' , writer = '".$postValue['writer']."'";
+        $this-> db -> bind_param_push($arrBind, $postValue['sno'], 'board_number');
+        $this-> db -> bind_param_push($arrBind, $postValue['commnet'], 'commnet');
+        $this-> db -> bind_param_push($arrBind, $postValue['writer'], 'writer');
+        $this->db->bind_query($sql, $arrBind);        
+        
+        
+        $sql = "INSERT INTO wm_test SET title = '".$title."', content = '".$content."' , writer = '".$writer."' ,imagePath = '".$image."'";
+    }
+    
+    
+    // 
+    public function selectComment($sno){
+        
+        $sql = "SELECT * FROM wm_sangjin  where board_number = '".$sno."' order by sno desc";
+        return $this->db->query_fetch($sql);
+        
+        
+    }
+    
+    public function getCommentList($postValue){
+        $commentNumber;
+        $i = 1;
+        for($j =0; $j < count($postValue); $j++){
+            $sql = "SELECT * FROM wm_sangjin where board_number = '".$postValue[$j]['sno']."'";
+            $result = $this->db->query_fetch($sql);
+            $commentNumber[$j] =count($result);
+        }
+
+        return $commentNumber;
+        
+    }
+    
+    
 }

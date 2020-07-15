@@ -1,0 +1,43 @@
+<html>
+<head>
+
+</head>
+<body>
+<form method="POST" action="board_ps.php" enctype="multipart/form-data">
+글쓴이 <input type="text" name="writer" value="{=result.writer}"/><br>
+제목 <input type="text" name="title" value="{=result.title}"/><br>
+내용 <textarea rows="20" cols="40" name="content">{=result.content}</textarea>
+<br>
+<input type="hidden" id = "type" name="sendType"/>
+<input type="hidden" name="sno" value="{=result.sno}"/>
+<input type="hidden" id = "confirmDelete" name="confirmDelete" value = "0"/>
+<input type="hidden" name = "imgSrc" value="{=result.imagePath}"/>
+<input type="file" name="file"/><br>
+<!-- {? result} -->
+<img alt="" name = "img" src="{=result.imagePath}"><br>
+    <!-- {? result.imagePath} -->
+	<button type="button" id = "deleteBtn" >이미지 삭제</button>
+    <!-- {/} -->
+<input type="submit" id = "modify" value="수정하기" onclick="btnClick()"/>
+<!-- {:} -->
+<input type="submit" id = "submit" value="작성하기" onclick="btnClick()"/>
+<!-- {/} -->
+
+</form>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+function btnClick(){
+	var e = window.event,
+	btn = e.target || e.srcElement;
+	document.getElementById("type").value = btn.id;
+}
+//이미지 삭제를 알림
+$(function(){
+	$('#deleteBtn').click(function(){
+		$('#confirmDelete').val("1")
+		alert($('#confirmDelete').val());
+	});
+});
+</script>
+</body>
+</html>

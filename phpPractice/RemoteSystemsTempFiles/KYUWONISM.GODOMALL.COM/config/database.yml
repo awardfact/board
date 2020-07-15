@@ -1,0 +1,12 @@
+master: 
+  host: promalldb23.godomall.com
+  port: 3306
+  username: kyuwondb
+  password: powercoding12
+  database: kyuwonism_godomall_com
+slave1:
+  host: promalldb23.godomall.com
+  port: 3306
+  username: kyuwondb
+  password: powercoding12
+  database: kyuwonism_godomall_com

@@ -9,8 +9,17 @@ class BoardRegController extends \Controller\Front\Controller
 {
     public function index()
     {
-        $getValue = Request::get()->toArray();
+        $getValue = Request::post()->toArray();
+        
+        $board = App::load(Board::class);
+        
+       
+        $comment = $board->selectComment($getValue['sno']);
+        
+
+        $this->setData('comment', $comment);		
         $this->setData('data' , $getValue);
+
     }
     
     
