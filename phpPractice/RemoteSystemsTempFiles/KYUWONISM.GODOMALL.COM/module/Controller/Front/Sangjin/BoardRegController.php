@@ -13,7 +13,7 @@ class BoardRegController extends \Controller\Front\Controller
         
         $board = App::load(Board::class);
         
-       
+       // 클릭한 글의 sno번호를 넘겨서 글의 댓글을 불러온다 
         $comment = $board->selectComment($getValue['sno']);
         
 

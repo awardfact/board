@@ -11,13 +11,21 @@ class BoardPsController extends \Controller\Front\Controller
 {
     public function index()
     {
+        
+        
+        
+        //session_start();
+        
         // 파일 업로드 경로 
         $uploadDirect = $_SERVER['DOCUMENT_ROOT']."data/sangjin/";
         
         // 입력된 정보를 받아옴
         $postValue = Request::request()->toArray();
         $getFile = Request::files()->all();
+        
 
+        
+        
         
         // 기존 이미지 체크박스가 체크되어있으면 기존 이미지를 삭제하고 뒤를 진행한다 
         if($postValue['existingImageDelete'] && $postValue['image']){
@@ -43,9 +51,9 @@ class BoardPsController extends \Controller\Front\Controller
         
         
         $board = App::load(Board::class);
-       
         
-        // mode값에 따라 db에 내용 삭제, 삽입, 수정을 실행한다 
+        
+        // mode값에 따라 db에 내용 삭제, 삽입, 수정을 , 댓글 내용 수정 삭제 삽입을 실행한다 
         switch($postValue['mode']){
             case 'write' :
                 $board->makeList($postValue);
@@ -58,6 +66,13 @@ class BoardPsController extends \Controller\Front\Controller
                 break;
             case 'comment' : 
                 $board->insertComment($postValue);
+                break;
+            case 'commentUpdate' :
+                $board->updateComment($postValue);
+                break;
+            case 'commentDelete':
+                $board->deleteComment($postValue);
+                break;
             default :
                 break;
         }

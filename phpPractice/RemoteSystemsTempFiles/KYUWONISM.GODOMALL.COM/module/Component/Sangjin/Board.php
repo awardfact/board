@@ -22,14 +22,25 @@ class Board
     }
 
     // db에서 데이터를 받아서 데이터를 리턴해준다
-    public function getBoardList() {
-        $sql = "SELECT * FROM wm_test order by sno desc";
+    public function getBoardList($postValue) {
+        
+        $start= $postValue['page'] * $postValue['selectedNumber'];
+        
+        $sql = "SELECT * FROM wm_test order by sno desc limit ".$start.", ".$postValue['selectedNumber']." ";
         return $this->db->query_fetch($sql);
     }
     
-    
+    // 게시글 숫자를 얻어내는 함수 
+    // $b에는 게시글 수가 들어간다 
+    public function getBoardCount(){
+        
+        $sql = "SELECT COUNT(*) FROM wm_test";   
+        $a =  $this->db->fetch($sql);
+        $b = $a[COUNT.'(*)'];
+        return $b;
 
-    
+    }
+
     /*
      * 매개변수를 입력값으로 받아서 db에 입력 데이터를 추가해준다 
      */
@@ -108,7 +119,7 @@ class Board
     }
     
     
-    // 
+    // 매개변수로 보낸 게시글의 sno값과 댓글의 board_number가 일치하는 댓글을 리턴해준다 
     public function selectComment($sno){
         
         $sql = "SELECT * FROM wm_sangjin  where board_number = '".$sno."' order by sno desc";
@@ -117,6 +128,11 @@ class Board
         
     }
     
+    
+    /*현재 게시판에 보이는 게시글들의 댓글 숫자를 얻어내는 함수 
+    * 현재 게시판에 보이는 게시글의 내용을 넘기고 게시글의 sno와 board_number와 일치하는 댓글의 개수가 몇 개인지
+    * 알아낸 다음에 배열에 넣고 배열을 리턴시켜준다 
+    */
     public function getCommentList($postValue){
         $commentNumber;
         $i = 1;
@@ -130,5 +146,31 @@ class Board
         
     }
     
+    
+    
+    /*
+     *  댓글을 수정하는 함수 
+     *  보내온 댓글 sno번호와 동일한 댓글의 내용을 매개변수로 보낸 입력한 댓글내용으로 교체해준다  
+     */
+    public function updateComment($postValue){
+        
+        $sql = "UPDATE wm_sangjin SET comment = '".$postValue['comment']."'WHERE 
+        board_number = '".$postValue['boardSno']."' AND sno = '".$postValue['sno']."' ";
+        $this->db->bind_param_push($arrBind, $postValue['comment'], 'comment');
+        $this->db->bind_query($sql,$arrBind);
+        
+    }
+    /*
+     * 댓글을 삭제하는 함수 
+     * 보내온 댓글의 sno번호와 동일한 댓글을 삭제한다 
+     */
+    public function deleteComment($postValue){
+        $query = "DELETE FROM wm_sangjin WHERE board_number = '".$postValue['boardSno']."' AND sno = '".$postValue['sno']."' ";
+        $this-> db -> bind_param_push($arrBind, $postValue['boardSno'], 'board_number');
+        $this -> db -> bind_param_push($arrBind, $postValue['sno'], 'sno');
+        $this -> db -> bind_query($query,$arrBind);
+
+        
+    }
     
 }

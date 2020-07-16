@@ -12,12 +12,16 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script>
     
+    
+    //댓글입력 버튼을 클릭하면 진행하는 이벤트 입력한 내용과 글쓴이 값, 게시글의 sno번호와 mode를 comment로 해서  ajax를 통해 board_ps에 보낸다 
     $(function(){
     	$('#inputComment').click(function(){
     		var $comment = $('#comment').val();
     		var $writer =  $('#writer').val();
     		var $sno =  $('#sno').val();
     		
+    		
+    		if($comment != '' && $writer != ''){
         		$.ajax({
         			url:'board_ps.php',
         			type:'POST' ,
@@ -28,20 +32,90 @@
         				'sno' : $sno
         			},
         			success:function(){
-        				 $('#comment').val('');
-        				 $('#writer').val('');
+        				// $('#comment').val('');
+        				// $('#writer').val('');
         				 location.reload();
         			},
         			error:function(){
         				alert("댓글입력 실패");	
         			},
         		});
+
+    		}
+
     	});
-    	$('#commentUpdate').click(function(){
-    		$(this).css('display','none');
-    		$('commnetDelete').css('display', 'none'');
+    	
+    	// 입력이 되어있는 댓글 오른쪽에 있는 수정 버튼을 누르면 실행하는 이벤트 
+   		// 클릭한 아이디의 _ 뒤에있는 숫자를 얻어서 그 숫자에 해당하는 input필드와 입력완료 버튼을 inline블록으로 보이게 하고 자기는 보이지 않게 한다 
+    	$('.commentUpdate').click(function(){
+    		$number = $(this).attr("id").split("_")[1];
+    		$(this).css("display", "none");
+    		$('#commnetUpdateText_' + $number).css("display", "inline-block");	
+    		$('#commentUpdateFinishButton_'+ $number).css("display", "inline-block");	
+    	
     	});
-    });
+    	
+    	//댓글 수정에서 입력완료 버튼을 누르면 실행되는 이벤트 입력한 아이디 _ 오른쪽 값을 통해 
+    	// 입렧한 내용을 얻어내고 ajax로 수정한 내용과 sno값들을 boad_ps에 보낸다
+    	$('.commentUpdateFinish').click(function(){
+    		$number = $(this).attr("id").split("_")[1];
+    		$input = $('#commnetUpdateText_' + $number).val();
+    		$boardSno = $('#boardSno').val();
+    		$sno = $('#sno_' + $number).val();
+    		
+    		if($input != ''){
+        		$.ajax({
+        			url:'board_ps.php',
+        			type:'POST' ,
+        			data:{
+        				'mode' : 'commentUpdate',
+        				'comment' : $input,
+        				'boardSno' : $boardSno,
+        				'sno' : $sno
+        			},
+        			success:function(){
+       				 	location.reload();
+        			},
+        			error:function(){
+        				alert("댓글입력 실패");	
+        			},
+        		});
+    		}
+
+    	});
+    	
+    	
+    	// 댓글 오른쪽의 삭제 버튼을 누르면 실행되는 이벤트  클릭한것의 id를 통해 어떤것을 삭제할지 얻어내고
+    	// ajax를 통해 board_ps에 sno값을 보내서 삭제를 실행하게 한다 
+    	$('.commentDeleteFinish').click(function(){
+    		$number = $(this).attr("id").split("_")[1];
+    		$boardSno = $('#boardSno').val();
+    		$sno = $('#sno_' + $number).val();
+    		
+    		$.ajax({
+    			url:'board_ps.php',
+    			type:'POST' ,
+    			data:{
+    				'mode' : 'commentDelete',
+    				'boardSno' : $boardSno,
+    				'sno' : $sno
+    			},
+    			success:function(){
+   				 	location.reload();
+    			},
+    			error:function(){
+    				alert("댓글삭제 실패");	
+    			},
+    		});
+    		
+    		
+    		
+    	});
+    	
+    	
+    	
+    	
+    });   // 전체 function닫기
     
     </script>
     
@@ -103,12 +177,15 @@
 		<!--{ / }-->
 		{=data.content}
 		</div><br> 
+		<input type = "hidden" id = "boardSno"value = "{=data.sno}"></input> 
 		<!--{ @ comment }-->
+			<input type = "hidden" id = "sno_{.index_}"value = "{=comment.sno}"></input> 
 			<p id = "existId">{=.writer}<p>
 			<span id = "existComment">{=.comment}</span>
-			<button id = "commnetUpdate">수정 </button> &nbsp;  
-			<input type = "text" style = "display :none;" /> <button id = "commentUpdateFinishButton">수정완료</button>
-			<button id = "commnetDelete">삭제</button>
+			<button id = "commnetUpdate_{.index_}" class = "commentUpdate">수정 </button> &nbsp;  
+			<input type = "text" style = "display :none;"  id = "commnetUpdateText_{.index_}"/>
+			 <button id = "commentUpdateFinishButton_{.index_}" class = "commentUpdateFinish" style = "display :none;" >수정완료</button>
+			<button id = "commnetDelete_{.index_}" class = "commentDeleteFinish">삭제</button>
 			<br><br>
 		<!--{ / }-->
 		댓글 내용 : <input type = "text" id = "comment" name = "comment" /> 
