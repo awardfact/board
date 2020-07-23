@@ -128,6 +128,23 @@
 	</style>
 </head>
 <body>
+	<!--{? loginId}-->
+		<div>현재 접속중인 아이디 : {=loginId}</div><br>
+		<form method = "POST" action = "board_list.php">
+			<input type = "hidden" name = "mode" value = "logout"></input>
+			<button type = "submit">로그아웃</button><br>
+		</form>
+
+	<!--{:}-->
+		<form method = "GET" action = "board_signup.php">
+			<input type = "hidden" value = "login" name = "mode" />
+			<span><button type = "submit">로그인</button></span>&nbsp;&nbsp;
+		</form>
+		<form  method = "GET" action = "board_signup.php">
+			<input type = "hidden" value = "signup" name = "mode" />
+			<span><button type = "submit">회원가입</button></span>
+		</form>
+	<!--{/}-->
 	<table border = "1" style = "text-align : center;">
 		<caption>
 		게시글
@@ -159,26 +176,28 @@
 				<input type = "text" class= "none"  value =  {=.content} name = "content"/>
 				<input type = "text" class="none" value = {=.writer} name= "writer" />
 				<input type = "text" class ="none" value = {=.imagePath} name = "image"/>
-				<input type = "text" name = "mode" value = "write" class="none"></input>
+				<input type = "text" name = "mode" value = "update" class="none"></input>
 				<button type = "submit">수정</button>
 			</form></td></tr>
 		<!--{ / }-->
 	</table>
+	
 	<form  method = "POST" action = "board_reg.php">
 	<input type = "text" name = "mode" value = "write" class="none"></input>
 	<button>
 		글쓰기
 	</button>
 	</form>
+
 	<form method = "POST" action = "board_ps.php">
 		<input class = "none" type = "text" name = "mode" value = "delete"></input>
 		<!--{ @ boardList }-->
 			<input type = "text" class = "none" name = {=.sno}></input>
 		<!--{ / }-->
-		<button>
+		<button type = "submit">
 		선택 삭제
 		</button>
-		</form>
+	</form>
 			<form name = "selectform" method = "GET" action = "board_list.php">
 			<p style = "text-align : left;">
 

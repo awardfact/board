@@ -5,14 +5,14 @@ namespace Controller\Front\Sangjin;
 use App;
 use Request;
 use Component\Sangjin\Board;
-
+use Session;
 
 class BoardPsController extends \Controller\Front\Controller
 {
     public function index()
     {
         
-        
+        $session = App::getInstance('session');
         
         //session_start();
         
@@ -23,9 +23,9 @@ class BoardPsController extends \Controller\Front\Controller
         $postValue = Request::request()->toArray();
         $getFile = Request::files()->all();
         
-
+        $session = App::getInstance('session');
         
-        
+        $postValue['writer'] = $session->get(SESSION_USER_CERTIFICATION);
         
         // 기존 이미지 체크박스가 체크되어있으면 기존 이미지를 삭제하고 뒤를 진행한다 
         if($postValue['existingImageDelete'] && $postValue['image']){
@@ -71,15 +71,25 @@ class BoardPsController extends \Controller\Front\Controller
                 $board->updateComment($postValue);
                 break;
             case 'commentDelete':
-                $board->deleteComment($postValue);
+                $result = $board->deleteComment($postValue);
+                echo $result;
+                exit;
+                break;
+            case 'duplicateCheck' :
+                $result = $board->idExistCheck($postValue);
+                echo $result;
                 break;
             default :
+
                 break;
         }
-        
-        
-        // 실행이 끝나면 리스트로 돌아간다 
-        echo "<script> location.replace('board_list.php')</script>";
+
+        if($postValue['mode'] != 'duplicateCheck') {
+            // 실행이 끝나면 리스트로 돌아간다
+            echo "<script> location.replace('board_list.php')</script>";
+        }
+        exit;
+
     }
     
 

@@ -4,6 +4,7 @@ namespace Controller\Front\Sangjin;
 use App;
 use Request;
 use Component\Sangjin\Board;
+use Session;
 
 class BoardListController extends \Controller\Front\Controller
 {
@@ -13,9 +14,18 @@ class BoardListController extends \Controller\Front\Controller
 
         $postValue = Request::request()->toArray();
         $board = App::load(Board::class);
-       
         
+        $session = App::getInstance('session');
         
+        if($postValue['mode'] == 'logout'){
+            $session->del(SESSION_USER_CERTIFICATION);
+            
+        }
+        
+        if($session->has(SESSION_USER_CERTIFICATION)){
+            $loginId = $session->get(SESSION_USER_CERTIFICATION);
+            
+        }
 
         
         // 페이지 번호를 클릭하지 않았다면 첫 페이지기 때문에 페이지 번호를 0번으로 초기화해준다 
@@ -55,15 +65,12 @@ class BoardListController extends \Controller\Front\Controller
         //현재 페이지, 페이지당 숫자를 통해 게시글과 게시글들의 댓글 숫자를 얻어온다 
         $boardData = $board->getBoardList($postValue);
         $comment = $board->getCommentList($boardData);
-        
 
-        
-        
-        
-        
         $this->setData('commentNumber',$comment);
         $this->setData('boardList', $boardData);
         $this->setData('currentPage', $postValue);
+        $this->setData('loginId' , $loginId);
+        gd_debug($loginId);
         gd_debug($postValue);
     }
     

@@ -100,8 +100,13 @@
     				'boardSno' : $boardSno,
     				'sno' : $sno
     			},
-    			success:function(){
-   				 	location.reload();
+    			success:function(result){
+					if(result == 1){
+						alert("댓글삭제 성공");
+					}else{
+						alert("댓글 작성자만 삭제할 수 있습니다.");
+					}
+					location.reload();
     			},
     			error:function(){
     				alert("댓글삭제 실패");	
@@ -124,7 +129,7 @@
 	
 
 <body>
-	<!--{ ? data.mode == 'write' }-->
+	<!--{ ? data.mode == 'update' }-->
 		<!--{ ? data.sno }-->
 			<form method = "POST" action = "board_ps.php" enctype = "multipart/form-data">
 				<p>{=data.sno}번글 수정</p>
@@ -141,7 +146,7 @@
 				<!--{ / }-->
 				<textarea  name = "content" value = "{=data.content}">{=data.content}</textarea>
 				</div><br>
-				글쓴이 : <input type = "text" name = "writer" value = "{=data.writer}" /><br>
+				글쓴이 :  {=data.writer}<br>
 				<!--{? data.image}-->
 				파일 수정하기 : <input type = "file"  name = "uploadFile" value = "{=data.image}" /><br>
 				<!--{:}-->
@@ -155,18 +160,18 @@
 				<input type = "text" name = "sno"  class = "none" value = {=data.sno}></input>
 				<button type = "submit">삭제하기</button>
 			</form>
-			<!--{:}-->
+			<!--{ / }-->
+		<!--{: data.mode == 'write'}-->
 				<form method = "POST" action = "board_ps.php" enctype = "multipart/form-data">
 					<p>글쓰기</p>
 					<input type = "text" class = "none" name = "mode" value = "write"></input>
 					제목 : <input type = "text" name = "title" /> </input><br>
 					내용 : <br>
 					<textarea name = "content" col = "30" rows= "30"> </textarea><br>
-					글쓴이 : <input type = "text" name = "writer"> </input><br>
+					글쓴이 : {=data.writer}<br>
 					파일 업로드 : <input type = "file" name = "uploadFile" value = "File"></input>
 				<button type = "submit">데이터 입력 완료</button>
 				</form>
-			<!--{ / }-->
 	<!--{: data.mode == 'read'}-->
 		제목 : <span>{=data.title}</span>
 		작성자 : <span>{=data.writer}</span><br>
@@ -189,7 +194,7 @@
 			<br><br>
 		<!--{ / }-->
 		댓글 내용 : <input type = "text" id = "comment" name = "comment" /> 
-		이름 : <input type = "text " id = "writer" name = "writer">
+		이름 : {=data.writer}<br>
 		<button type = "submit" id = "inputComment" >댓글입력</button><br>
 		<button><a href = "board_list.php" style = "color : white";>뒤로가기</a></button> 
 		<form method = "POST" action = "board_ps.php">

@@ -86,22 +86,30 @@ class Board
      */
     
     public function deleteList($postValue){
+
+        $writer = $postValue['writer'];
         
-        
+        gd_debug($postValue);
         //예제코드 2 방법
         foreach($postValue as $value){
-            $query = "DELETE FROM wm_test WHERE sno = '".$value."'";
-            $this ->db->bind_param_push($arrBind,$value, 'sno');
-            $this->db->bind_query($query,$arrBind);
-            
-            $query2 = "DELETE FROM wm_sangjin WHERE board_number ='".$value."'";
-            $this -> db -> bind_param_push($arrBind, $value, 'board_number');
-            $this-> db-> bind_query($query2,$arrBind);
-            
-        }
 
-        
-        
+            $sql = "SELECT * FROM wm_test where sno = '".$value."'  AND writer = '".$writer."' ";
+            if($this->db->query_fetch($sql)){
+                $query = "DELETE FROM wm_test WHERE sno = '".$value."' ";
+                $this ->db->bind_param_push($arrBind,$value, 'sno');
+                $this->db->bind_query($query,$arrBind);
+                
+                
+                
+                $query2 = "DELETE FROM wm_sangjin WHERE board_number ='".$value."'";
+                $this -> db -> bind_param_push($arrBind, $value, 'board_number');
+                $this-> db-> bind_query($query2,$arrBind);
+                
+            }else if($value != '' && $value != 'delete' && $value != $writer){
+                echo "<script> alert('자신이 작성한 게시글만 삭제할 수 있습니다.');</script>";
+                
+            }
+        }        
     }
     
     // 입력한 댓글을 db에 넣는다 
@@ -165,12 +173,74 @@ class Board
      * 보내온 댓글의 sno번호와 동일한 댓글을 삭제한다 
      */
     public function deleteComment($postValue){
-        $query = "DELETE FROM wm_sangjin WHERE board_number = '".$postValue['boardSno']."' AND sno = '".$postValue['sno']."' ";
-        $this-> db -> bind_param_push($arrBind, $postValue['boardSno'], 'board_number');
-        $this -> db -> bind_param_push($arrBind, $postValue['sno'], 'sno');
-        $this -> db -> bind_query($query,$arrBind);
+        
+        $writer = $postValue['writer'];
+        $sql = "SELECT * from wm_sangjin WHERE sno = '".$postValue['sno']."' AND
+         board_number = '".$postValue['boardSno']."' AND  writer = '".$writer."' ";
+        if($this->db->query_fetch($sql)){
+            
+            
+            $query = "DELETE FROM wm_sangjin WHERE board_number = '".$postValue['boardSno']."' 
+            AND sno = '".$postValue['sno']."' AND writer = '".$writer."' ";
+            $this-> db -> bind_param_push($arrBind, $postValue['boardSno'], 'board_number');
+            $this -> db -> bind_param_push($arrBind, $postValue['sno'], 'sno');
+            $this -> db -> bind_param_push($arrBind, $writer, 'writer');
+            $this -> db -> bind_query($query,$arrBind);
+            return 1;
+        }else{
+           return 0;
+            
+         }
+        
+            
+        
 
         
     }
+    
+    public function idExistCheck($postValue){
+        
+        
+        
+        $sql = "SELECT * FROM wm_sangjin_member  where  id = '".$postValue['inputId']."'";
+        $check = $this->db->query_fetch($sql);
+       
+        
+        if($check){
+            return 0;
+            
+        }else{
+            return 1;
+        }
+        
+        
+    }
+    
+    public function insertMember($postValue){
+        
+        $sql = "INSERT INTO wm_sangjin_member SET id = '".$postValue['inputId']."' , password = '".$postValue['inputPassword']."' ";
+        $this-> db -> bind_param_push($arrBind, $postValue['inputId'], 'id');
+        $this-> db -> bind_param_push($arrBind, $postValue['inputPassword'], 'password');
+
+        $this->db->bind_query($sql, $arrBind);
+        
+        
+    }
+    
+    public function loginMember($postValue){
+        $sql = "SELECT * FROM wm_sangjin_member where  id = '".$postValue['inputId']."' AND password = '".$postValue['inputPassword']."'";
+        $check = $this->db->query_fetch($sql);
+        
+        if($check){
+            return 1;
+            
+        }else{
+            return 0;
+        }
+        
+        
+        
+    }
+    
     
 }

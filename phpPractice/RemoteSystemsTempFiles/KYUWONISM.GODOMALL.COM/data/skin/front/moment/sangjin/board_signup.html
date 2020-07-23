@@ -1,0 +1,189 @@
+{# header }
+ <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+ <script>
+  $(function(){
+	  
+	  
+	  /*
+	  * inputId = 입력한 아이디 
+	  *  inputPassword = 입력한 패스워드
+	  * properId = 적절한 아이디면 1
+	  * duplicateCheck = 가입 아이디중에 중복된게 없으면 1
+	  * properPassword = 적절한 패스워드면 1
+	  * samePassword = 동일한 패스워드 입력했으면1 
+	  */
+	  
+	  var length
+	  
+	  var idRegular = /^[a-zA-z0-9]{4,15}$/;
+	  var passwordRegular = /^(?=.*[A-Z]{1,})(?=.*[a-z]{1,})(?=.*[0-9]{1,})(?=.*[!@#$%\\^&*\\(\\)\-_=+~]{1,})[a-zA-z0-9!@#$%\\^&*\\(\\)-_=+~]{8,15}$/;
+	  var inputId;
+	  
+	  $("#inputId").on("propertychange change keyup paste input", function(){
+		  $length = $(this).val().length;
+		  
+		  var result = idRegular.test($(this).val());
+
+
+		  if($length == 0){
+			//  $("#idlength").css("display", "inline");
+			 // $('#regular').css("display" , "none");
+			  $("#idlength").html("아이디를 입력해주세요.");
+			  $("input[name=properId]").val(0);
+		  }
+		  else if($length < 4 && $length > 0){
+			//  $("#idlength").css("display", "inline");
+			//  $('#regular').css("display" , "none");
+			  $("#idlength").html("아이디 길이가 짧습니다.");
+			  $("input[name=properId]").val(0);
+		  }
+		  else if($length > 12){
+			//  $("#idlength").css("display", "inline");
+			//  $('#regular').css("display" , "none");
+			  $("#idlength").html("아이디 길이가 너무 깁니다.");
+			  $("input[name=properId]").val(0);
+		  }
+		  else if(!result){
+			//  $("#idlength").css("display", "none");
+			//  $('#regular').css("display" , "inline");
+			
+			  $("#idlength").html("부적절한 아이디입니다.");
+			  $("input[name=properId]").val(0);
+			  
+		  }
+		  else if($length > 4 && $length){
+			  $("#idlength").html("");
+			  $("input[name=properId]").val(1);
+			  if($("input[name=properId]").val() == 1 && $("input[name=duplicateCheck]").val() == 1 &&
+				$("input[name=properPassword]").val() == 1 && $("input[name=samePassword]").val()  == 1){
+				$("#registerSpan").css("display", "none");  
+				$("#registerButton").css("display", "block");  
+			  }else{
+				$("#registerSpan").css("display", "block");  
+				$("#registerButton").css("display", "none");  
+
+			  }
+	    	  $inputId = $(this).val();
+		  }
+
+
+  	});
+	  
+	  
+	  
+	  $("#inputPassword").on("propertychange change keyup paste input", function(){
+		  $length = $(this).val().length;
+		  var result = passwordRegular.test($(this).val());
+		  
+		  if($length == 0){
+			  $("#passwordlength").html("패스워드를 입력해주세요.");
+			  $("input[name=properPassword]").val(0);
+		  }
+		  else if(!result){
+			  $("#passwordlength").html("영어 대/소문자 숫자 특수문자가 들어간 8~15자리를 입력해주세요.");
+			  $("input[name=properPassword]").val(0);
+		  }
+		  else{
+			  $("#passwordlength").html("적절한 패스워드입니다.");
+			  $("input[name=properPassword]").val(1);
+			  
+			  if($("input[name=properId]").val() == 1 && $("input[name=duplicateCheck]").val() == 1 &&
+				$("input[name=properPassword]").val() == 1 && $("input[name=samePassword]").val()  == 1){
+				$("#registerSpan").css("display", "none");  
+				$("#registerButton").css("display", "block");  
+			  }else{
+				$("#registerSpan").css("display", "block");  
+				$("#registerButton").css("display", "none");  
+
+				}
+			  }
+	  });
+	
+	  
+	  
+	  $("#inputPassword2").on("propertychange change keyup paste input", function(){
+		 if($(this).val().length == 0){
+			  $("input[name=samePassword]").val(0);
+			  $("#password2").html("패스워드를 입력해주세요.");
+		 }
+		 else if($("#inputPassword").val() == $(this).val()){
+			  $("#password2").html("동일한 패스워드입니다.");
+			  $("input[name=samePassword]").val(1);
+			  if($("input[name=properId]").val() == 1 && $("input[name=duplicateCheck]").val() == 1 &&
+				$("input[name=properPassword]").val() == 1 && $("input[name=samePassword]").val()  == 1){
+				$("#registerSpan").css("display", "none");  
+				$("#registerButton").css("display", "block");  
+			  }else{
+				$("#registerSpan").css("display", "block");  
+				$("#registerButton").css("display", "none");  			  
+	  			 }
+		 }else{
+		  $("input[name=samePassword]").val(0);
+		  $("#password2").html("동일한 패스워드를 입력해주세요.");
+	  	 }
+	  });
+	
+	  $("#inputId").focusout(function(){
+		  $.ajax({
+  			url:'board_ps.php',
+  			type:'POST' ,
+  			data:{
+  				'mode' : 'duplicateCheck',
+  				'inputId' : $inputId
+  			},
+  			success:function(check){
+				if(check == 1){
+					$("input[name=duplicateCheck]").val(1);
+					$("#idlength").html("적절한 아이디입니다.");
+				  if($("input[name=properId]").val() == 1 && $("input[name=duplicateCheck]").val() == 1 &&
+					$("input[name=properPassword]").val() == 1 && $("input[name=samePassword]").val()  == 1){
+						$("#registerSpan").css("display", "none");  
+						$("#registerButton").css("display", "block");  
+					  }else{
+						$("#registerSpan").css("display", "block");  
+						$("#registerButton").css("display", "none");  
+				}
+				}
+			  else{
+				$("input[name=duplicateCheck]").val(0);
+				$("#idlength").html("이미 가입된 아이디입니다.");
+				}
+  			},
+  			error:function(error){
+  				console.log(error);
+  				//alert("중복확인 실패");
+  			}
+  		});
+		  
+	  });
+  });	  
+ 
+ 
+</script>
+<!--{? mode.mode == 'login'}-->
+	<form action = "board_signup.php" method = "POST" >
+	<input type = "hidden" name = "mode" value = "login" />
+	아이디 : <input type = "text" name = "inputId" id = "inputId"/><br>
+	패스워드 :  <input type = "text" name = "inputPassword" />
+	<button type = "submit">로그인</button>
+	</form>
+	<button><a href = "board_list.php" />뒤로가기</button>
+<!--{: mode.mode == 'signup'}-->
+	<form action = "board_signup.php" method = "POST" >
+	<input type = "hidden" name = "mode" value = "signup" />
+	아이디 : <input type = "text" name = "inputId" id = "inputId"/> <span id = "idlength" value = "아이디를 입력해주세요">아이디를 입력해주세요</span>
+	<input type = "hidden" name = "properId" /><input type = "hidden" id = "duplicateCheck" name= "duplicateCheck"  />
+	<br>
+	패스워드 : <input type = "password" name = "inputPassword" id = "inputPassword"/><span id = "passwordlength" >패스워드를 입력해주세요</span>
+	<input type = "hidden" name = "properPassword" />
+	<br>
+	패스워드 확인 : <input type = "password"  id = "inputPassword2"/><span id = "password2" >패스워드를 입력해주세요</span>
+	<input type = "hidden" name = "samePassword" />
+	<br>
+	<span id = "registerSpan">회원가입</span>
+	<button id = "registerButton" type = "submit" style = "display : none">회원가입</button>
+	</form>
+	<button><a href = "board_list.php" />뒤로가기</button>
+<!--{/}-->
+
+{# footer }
